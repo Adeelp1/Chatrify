@@ -1,0 +1,65 @@
+body{
+    background-color: lightblue;
+    font-family: Arial, sans-serif;
+}
+
+#display {
+    display: flex; /* This aligns child elements in a horizontal row */
+    justify-content: space-around; /* Adjusts spacing between the boxes */
+    align-items: center; /* Aligns the boxes vertically (optional) */
+    /* height: 100vh; Optional: centers them vertically in the viewport */
+    margin: 10px;
+    margin-top: 70px;
+}
+  
+/* #cam1{
+    width: 700px;
+    height: 500px;
+    border: 2px solid black;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 2px;
+} */
+
+#cam1 {
+    width: 640px;
+    height: 480px;
+    /* border: 2px solid #000; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #eee;
+}
+#video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#cam2{
+    width: 640px;
+    height: 480px;
+    border: 2px solid #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #eee;
+}
+
+#heading{
+    text-align: center;
+}
+
+#btn{
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 65px;
+    margin-left: auto;
+    margin-top: 20px;
+}
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+}
