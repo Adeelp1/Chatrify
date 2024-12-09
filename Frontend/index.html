@@ -14,15 +14,20 @@
         <div id="display">
             <div id="cam1">
                 <div id="video-container">
-                    <video id="video" autoplay muted></video>
+                    <video id="localVideo" autoplay muted playsinline></video>
                 </div>
             </div>
-            <div id="cam2"></div>
+            <div id="cam2">
+                <video id="remoteVideo" autoplay playsinline></video>
+            </div>
         </div>
-
-        <button id="btn">Next</button>
+        <div id="button">
+            <button id="startBtn">Start</button>
+            <button id="stopBtn" disabled>Stop</button>
+            <button id="nextBtn" disabled>Next</button>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

@@ -52,14 +52,24 @@ body{
     text-align: center;
 }
 
-#btn{
+#nextBtn{
     display: flex;
     justify-content: flex-end;
     margin-right: 65px;
     margin-left: auto;
     margin-top: 20px;
 }
-button {
-    padding: 10px 20px;
-    font-size: 16px;
+
+#startBtn{
+    display: flex;
+    justify-content: flex-start;
+    margin-left: 64px;
+    margin-right: auto;
+    margin-top: 20px;
+}
+
+#button {
+    margin: 0.2em 0.1em;
+    display: flex;
+    justify-content: space-around;
 }
