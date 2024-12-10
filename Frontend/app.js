@@ -2,6 +2,11 @@
 let localStream = null;
 let remoteStream = null;
 
+var socket = io();
+const roomId = `room-${Math.random().toString(36).substr(2, 9)}`;
+
+socket.emit('joinRoom', roomId);
+
 function init() {
     document.querySelector('#startBtn').addEventListener('click', openUserMedia);
     document.querySelector('#stopBtn').addEventListener('click', hangUp);
@@ -15,7 +20,13 @@ async function openUserMedia(e) {
     document.querySelector('#localVideo').style.transform = 'scaleX(-1)';
     document.querySelector('#localVideo').srcObject = stream
     localStream = stream;
-    remoteStream = new MediaStream();
+
+    socket.emit("localStream", localStream);
+
+    socket.on("remoteStream", (remote) => {
+        remoteStream = remote;
+    })
+    
     document.querySelector("#remoteVideo").srcObject = remoteStream;
 
     console.log('Stream: ', document.querySelector('#localVideo').srcObject);
