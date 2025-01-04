@@ -2,11 +2,15 @@
 let localStream;
 let remoteStream = document.querySelector("#remoteVideo");
 let CUsers;
+let roomId;
 
 var socket = io();
-const username = `room-${Math.random().toString(36).substr(2, 9)}`;
+const username = `session-${Math.random().toString(36).substr(2, 9)}`;
 
-socket.emit('joinRoom', username);
+socket.on("roomid", (id) => {
+    roomId = id;
+});
+socket.emit('sessionId', username);
 
 function init() {
     document.querySelector('#startBtn').addEventListener('click', openUserMedia);
@@ -58,21 +62,21 @@ const PeerConnection = (function() {
     }
 })();
 
-socket.on("users", users => {
-    for(const user in users) {
-        if (user !== username){
-            CUsers = user
-        }
-    }
-})
+// socket.on("users", users => {
+//     for(const user in users) {
+//         if (user !== username){
+//             CUsers = user
+//         }
+//     }
+// });
 
-socket.on("offer", async ({from, to, offer}) => {
+socket.on("offer", async ({r_id, offer}) => {
     const pc = PeerConnection.getInstance();
     // set remote description
     await pc.setRemoteDescription(offer);
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
-    socket.emit("answer", {from, to, answer: pc.localDescription});
+    socket.emit("answer", {r_id, answer: pc.localDescription});
 });
 
 socket.on("answer", async answer => {
@@ -99,7 +103,7 @@ async function openUserMedia(e) {
     console.log(`offer: ${offer}`);
     await pc.setLocalDescription(offer);
 
-    socket.emit("offer", {from: username,to: CUsers, offer: pc.localDescription});
+    socket.emit("offer", {r_id: roomId, offer: pc.localDescription});
 
     // socket.emit("localStream", localStream);
 
