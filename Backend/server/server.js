@@ -11,7 +11,8 @@ const io = socketIO(server);
 const port = 3000
 
 var count = 0;
-var clients = {}
+var clients = {};
+var activeRooms = [];
 var user_queue = [];
 var roomId;
 
@@ -27,16 +28,31 @@ function generateUuid() {
     return uuidv4();
 }
 
-roomId = generateUuid();
+function getRoomSize(id) {
+    try {
+        return io.sockets.adapter.rooms.get(id).size;
+    } catch (error) {
+        return 0;
+    } 
+}
 
 io.on("connection", (socket) => {
     count += 1;
     user_queue.push(socket.id);
     console.log("New connection established", socket.id, count);
 
-    socket.join(roomId);
-    socket.emit("roomid", roomId);
-    
+    if (activeRooms.length === 0) {
+        roomId = generateUuid();
+        activeRooms.push(roomId);
+    }
+    else {
+        roomId = activeRooms[0];
+        socket.join(roomId);
+        if (getRoomSize(roomId) == 2) {
+            activeRooms.shift();
+        }
+    }
+
     // Session id
     socket.on('sessionId', (username) => {
         // console.log('Socket', socket.id, 'joined room: ', roomId);
@@ -59,15 +75,22 @@ io.on("connection", (socket) => {
         socket.broadcast.to(roomId).emit("icecandidate", candidate);
     });
 
-    socket.on("disconnect", () => {
+    socket.on("disconnecting", () => {
         const rooms = Array.from(socket.rooms);
         const userRoom = rooms[1];
+        socket.leave(userRoom);
+        if (getRoomSize(userRoom) == 1) {
+            activeRooms.push(userRoom);
+        }
+        console.log("roomId", userRoom);
+    });
+
+    socket.on("disconnect", () => {
         count -= 1;
-
+        const roomSize = getRoomSize(roomId);
         console.log("connection closed",socket.id, count);
-
-        socket.leave(userRoom)
-        delete clients[socket.id]
+        console.log("room size", roomSize);
+        delete clients[socket.id];
     });
 });
 
