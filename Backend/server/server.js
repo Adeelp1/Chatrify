@@ -2,7 +2,6 @@ const express = require("express");
 const http = require("http");
 const socketIO = require("socket.io");
 const path = require("path");
-const { v4: uuidv4 } = require("uuid");
 
 const app = express();
 const server = http.createServer(app);
@@ -15,6 +14,7 @@ var clients = {};
 var activeRooms = [];
 var user_queue = [];
 var roomId;
+var roomCounter = 0;
 
 // Server static files from the 'frontend' folder
 app.use(express.static(path.join(__dirname, '../../Frontend')));
@@ -25,7 +25,8 @@ app.get("/", (req, res) => {
 });
 
 function generateUuid() {
-    return uuidv4();
+    roomCounter += 1; 
+    return 'room-'+ roomCounter;
 }
 
 function getRoomSize(id) {
