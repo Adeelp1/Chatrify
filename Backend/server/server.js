@@ -37,22 +37,33 @@ function getRoomSize(id) {
     } 
 }
 
-io.on("connection", (socket) => {
-    count += 1;
-    user_queue.push(socket.id);
-    console.log("New connection established", socket.id, count);
+function getRoomName(socketId) {
+    const rooms = Array.from(socketId.rooms);
+    console.log("roomnameeeeee", rooms);
+    return rooms[1];
+}
 
+function joinRoom(socketId) {
     if (activeRooms.length === 0) {
         roomId = generateUuid();
         activeRooms.push(roomId);
+        socketId.join(roomId);
     }
     else {
         roomId = activeRooms[0];
-        socket.join(roomId);
+        socketId.join(roomId);
         if (getRoomSize(roomId) == 2) {
             activeRooms.shift();
         }
     }
+}
+
+io.on("connection", (socket) => {
+    count += 1;
+    user_queue.push(socket.id);
+    console.log("New connection established", socket.id, count);
+    
+    joinRoom(socket);
 
     // Session id
     socket.on('sessionId', (username) => {
@@ -62,7 +73,6 @@ io.on("connection", (socket) => {
     });
 
     socket.on("offer", ({r_id, offer}) => {
-        console.log(`r_id: ${r_id} offer: ${offer}`)
         socket.broadcast.to(roomId).emit("offer", {r_id, offer});
     });
 
@@ -76,9 +86,26 @@ io.on("connection", (socket) => {
         socket.broadcast.to(roomId).emit("icecandidate", candidate);
     });
 
+    socket.on("changeRoom", () => {
+        console.log("changeRoom");
+        var userRoom = getRoomName(socket);
+        socket.leave(userRoom);
+        activeRooms.push(userRoom);
+        console.log("userRoooooom", userRoom);
+        // activeRooms.push(userRoom);
+        joinRoom(socket);
+        console.log("new room =", getRoomName(socket));
+        console.log("[room] active Rooms = ", activeRooms);
+        socket.emit("restartIce");
+    });
+
+    socket.on("printRooms", () => {
+        console.log("[current room] = ", getRoomName(socket));
+    });
+
     socket.on("disconnecting", () => {
-        const rooms = Array.from(socket.rooms);
-        const userRoom = rooms[1];
+        // const rooms = Array.from(socket.rooms);
+        const userRoom = getRoomName(socket);
         socket.leave(userRoom);
         if (getRoomSize(userRoom) == 1) {
             activeRooms.push(userRoom);

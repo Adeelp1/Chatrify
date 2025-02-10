@@ -13,8 +13,9 @@ socket.on("roomid", (id) => {
 socket.emit('sessionId', username);
 
 function init() {
-    document.querySelector('#startBtn').addEventListener('click', openUserMedia);
-    document.querySelector('#stopBtn').addEventListener('click', hangUp);
+    // document.querySelector('#startBtn').addEventListener('click', openUserMedia);
+    // document.querySelector('#stopBtn').addEventListener('click', hangUp);
+    document.querySelector('#nextBtn').addEventListener('click', next);
 }
 
 
@@ -54,7 +55,7 @@ const PeerConnection = (function() {
 
     return {
         getInstance: () => {
-            if(!peerConnection) {
+            if(!peerConnection || peerConnection.connectionState === "closed") {
                 peerConnection = createPeerConnection();
             }
             return peerConnection;
@@ -90,6 +91,14 @@ socket.on("icecandidate", async candidate => {
     await pc.addIceCandidate(new RTCIceCandidate(candidate));
 });
 
+async function startPeerConnection(e) {
+    const pc = PeerConnection.getInstance();
+    const offer = pc.createOffer();
+    console.log(`offer: ${offer}`);
+    await pc.setLocalDescription(offer);
+    socket.emit("offer", {r_id: roomId, offer: pc.localDescription});
+}
+
 // Request access to the webcam
 async function openUserMedia(e) {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -98,12 +107,13 @@ async function openUserMedia(e) {
     localStream = stream;
     document.querySelector('#localVideo').srcObject = stream;
 
-    const pc = PeerConnection.getInstance();
-    const offer = await pc.createOffer();
-    console.log(`offer: ${offer}`);
-    await pc.setLocalDescription(offer);
+    startPeerConnection();
+    // const pc = PeerConnection.getInstance();
+    // const offer = await pc.createOffer();
+    // console.log(`offer: ${offer}`);
+    // await pc.setLocalDescription(offer);
 
-    socket.emit("offer", {r_id: roomId, offer: pc.localDescription});
+    // socket.emit("offer", {r_id: roomId, offer: pc.localDescription});
 
     // socket.emit("localStream", localStream);
 
@@ -114,30 +124,41 @@ async function openUserMedia(e) {
     // document.querySelector("#remoteVideo").srcObject = remoteStream;
 
     console.log('Stream: ', document.querySelector('#localVideo').srcObject);
-    document.querySelector('#stopBtn').disabled = false;
-    document.querySelector('#startBtn').disabled = true;
-    document.querySelector('#nextBtn').disabled = false;
+    // document.querySelector('#stopBtn').disabled = false;
+    // document.querySelector('#startBtn').disabled = true;
+    // document.querySelector('#nextBtn').disabled = false;
+}
+
+async function next(e) {
+    const pc = PeerConnection.getInstance();
+    pc.close();
+    socket.emit("changeRoom");
+    socket.on("restartIce", async () => {
+        startPeerConnection();
+        // pc.restartIce();
+        // const offer = await pc.createOffer();
+        // await pc.setLocalDescription(offer);
+        // socket.emit("offer", {r_id: roomId, offer: pc.localDescription});
+    });
 }
 
 async function hangUp(e) {
-    const pc = PeerConnection.getInstance();
-    if(pc) {
-        pc.close();
-    }
-    const tracks = document.querySelector('#localVideo').srcObject.getTracks();
-    tracks.forEach(track => {
-        track.stop();
-    });
+//     const pc = PeerConnection.getInstance();
+//     if(pc) {
+//         pc.close();
+//     }
+//     const tracks = document.querySelector('#localVideo').srcObject.getTracks();
+//     tracks.forEach(track => {
+//         track.stop();
+//     });
 
-    if (remoteStream) {
-        remoteStream.getTracks().forEach(track => track.stop());
-    }
+//     if (remoteStream) {
+//         remoteStream.getTracks().forEach(track => track.stop());
+//     }
 
-    document.querySelector('#localVideo').srcObject = null;
-    document.querySelector('#remoteVideo').srcObject = null;
-    document.querySelector('#stopBtn').disabled = true;
-    document.querySelector('#startBtn').disabled = false;
-    document.querySelector('#nextBtn').disabled = true;
+//     // document.querySelector('#localVideo').srcObject = null;
+//     // document.querySelector('#remoteVideo').srcObject = null;
 }
 
 init();
+openUserMedia();
