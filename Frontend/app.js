@@ -13,8 +13,6 @@ socket.on("roomid", (id) => {
 socket.emit('sessionId', username);
 
 function init() {
-    // document.querySelector('#startBtn').addEventListener('click', openUserMedia);
-    // document.querySelector('#stopBtn').addEventListener('click', hangUp);
     document.querySelector('#nextBtn').addEventListener('click', next);
 }
 
@@ -63,14 +61,6 @@ const PeerConnection = (function() {
     }
 })();
 
-// socket.on("users", users => {
-//     for(const user in users) {
-//         if (user !== username){
-//             CUsers = user
-//         }
-//     }
-// });
-
 socket.on("offer", async ({r_id, offer}) => {
     const pc = PeerConnection.getInstance();
     // set remote description
@@ -108,25 +98,8 @@ async function openUserMedia(e) {
     document.querySelector('#localVideo').srcObject = stream;
 
     startPeerConnection();
-    // const pc = PeerConnection.getInstance();
-    // const offer = await pc.createOffer();
-    // console.log(`offer: ${offer}`);
-    // await pc.setLocalDescription(offer);
-
-    // socket.emit("offer", {r_id: roomId, offer: pc.localDescription});
-
-    // socket.emit("localStream", localStream);
-
-    // socket.on("remoteStream", (remote) => {
-    //     remoteStream = remote;
-    // })
-    
-    // document.querySelector("#remoteVideo").srcObject = remoteStream;
 
     console.log('Stream: ', document.querySelector('#localVideo').srcObject);
-    // document.querySelector('#stopBtn').disabled = false;
-    // document.querySelector('#startBtn').disabled = true;
-    // document.querySelector('#nextBtn').disabled = false;
 }
 
 async function next(e) {
@@ -135,10 +108,6 @@ async function next(e) {
     socket.emit("changeRoom");
     socket.on("restartIce", async () => {
         startPeerConnection();
-        // pc.restartIce();
-        // const offer = await pc.createOffer();
-        // await pc.setLocalDescription(offer);
-        // socket.emit("offer", {r_id: roomId, offer: pc.localDescription});
     });
 }
 

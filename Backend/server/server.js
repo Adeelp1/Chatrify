@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../../Frontend/index.html"));
 });
 
-function generateUuid() {
+function generateRoomName() {
     roomCounter += 1; 
     return 'room-'+ roomCounter;
 }
@@ -39,13 +39,12 @@ function getRoomSize(id) {
 
 function getRoomName(socketId) {
     const rooms = Array.from(socketId.rooms);
-    console.log("roomnameeeeee", rooms);
     return rooms[1];
 }
 
 function joinRoom(socketId) {
     if (activeRooms.length === 0) {
-        roomId = generateUuid();
+        roomId = generateRoomName();
         activeRooms.push(roomId);
         socketId.join(roomId);
     }
@@ -91,16 +90,10 @@ io.on("connection", (socket) => {
         var userRoom = getRoomName(socket);
         socket.leave(userRoom);
         activeRooms.push(userRoom);
-        console.log("userRoooooom", userRoom);
-        // activeRooms.push(userRoom);
         joinRoom(socket);
         console.log("new room =", getRoomName(socket));
         console.log("[room] active Rooms = ", activeRooms);
         socket.emit("restartIce");
-    });
-
-    socket.on("printRooms", () => {
-        console.log("[current room] = ", getRoomName(socket));
     });
 
     socket.on("disconnecting", () => {
@@ -116,7 +109,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         count -= 1;
         const roomSize = getRoomSize(roomId);
-        console.log("connection closed",socket.id, count);
+        console.log("[connection closed]",socket.id, count);
         console.log("room size", roomSize);
         delete clients[socket.id];
     });
