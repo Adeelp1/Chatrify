@@ -38,6 +38,11 @@ const PeerConnection = (function() {
         })
         // listen to remote stream and add to peer connection
         peerConnection.ontrack = function(event) {
+            // hide loading video and show the actual stream
+            document.querySelector("#loadingVideo").style.display = "none";
+            remoteStream.style.display = "block";
+
+            // assign the remote stream
             remoteStream.style.transform = 'scaleX(-1)';
             remoteStream.srcObject = event.streams[0];
         }
@@ -81,9 +86,15 @@ socket.on("icecandidate", async candidate => {
     await pc.addIceCandidate(new RTCIceCandidate(candidate));
 });
 
+socket.on("colsed", () => {
+    // show loading video, hide remote video
+    document.querySelector("#loadingVideo").style.display = "block";
+    remoteStream.style.display = "none";
+})
+
 async function startPeerConnection(e) {
     const pc = PeerConnection.getInstance();
-    const offer = pc.createOffer();
+    const offer = await pc.createOffer();
     console.log(`offer: ${offer}`);
     await pc.setLocalDescription(offer);
     socket.emit("offer", {r_id: roomId, offer: pc.localDescription});

@@ -16,7 +16,7 @@ var user_queue = [];
 var roomId;
 var roomCounter = 0;
 
-// Server static files from the 'frontend' folder
+// Serve static files from the 'frontend' folder
 app.use(express.static(path.join(__dirname, '../../Frontend')));
 
 
@@ -29,9 +29,9 @@ function generateRoomName() {
     return 'room-'+ roomCounter;
 }
 
-function getRoomSize(id) {
+function getRoomSize(r_id) {
     try {
-        return io.sockets.adapter.rooms.get(id).size;
+        return io.sockets.adapter.rooms.get(r_id).size;
     } catch (error) {
         return 0;
     } 
@@ -88,6 +88,7 @@ io.on("connection", (socket) => {
     socket.on("changeRoom", () => {
         console.log("changeRoom");
         var userRoom = getRoomName(socket);
+        socket.broadcast.to(userRoom).emit("colsed");
         socket.leave(userRoom);
         activeRooms.push(userRoom);
         joinRoom(socket);
