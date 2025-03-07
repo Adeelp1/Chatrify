@@ -100,6 +100,7 @@ io.on("connection", (socket) => {
     socket.on("disconnecting", () => {
         // const rooms = Array.from(socket.rooms);
         const userRoom = getRoomName(socket);
+        socket.broadcast.to(userRoom).emit("colsed");
         socket.leave(userRoom);
         if (getRoomSize(userRoom) == 1) {
             activeRooms.push(userRoom);
