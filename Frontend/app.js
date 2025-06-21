@@ -4,6 +4,15 @@ let remoteStream = document.querySelector("#remoteVideo");
 let CUsers;
 let roomId;
 
+const constraints = {
+  video: {
+    width: { ideal: 1280 },
+    height: { ideal: 720 },
+    frameRate: { ideal: 30 },
+  },
+  audio: true,
+};
+
 var socket = io();
 const username = `session-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -102,7 +111,7 @@ async function startPeerConnection(e) {
 
 // Request access to the webcam
 async function openUserMedia(e) {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
     // Set the video source to the webcam stream
     document.querySelector('#localVideo').style.transform = 'scaleX(-1)';
     localStream = stream;
