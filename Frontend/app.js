@@ -3,6 +3,8 @@ let localStream;
 let remoteStream = document.querySelector("#remoteVideo");
 let CUsers;
 let roomId;
+let isRemoteDescriptionSet = false;
+let iceQue = [];
 
 const constraints = {
   video: {
@@ -25,6 +27,9 @@ function init() {
     document.querySelector('#nextBtn').addEventListener('click', next);
 }
 
+function sendICE(candidate) {
+    socket.emit("icecandidate", candidate);
+}
 
 // Peer Connection
 const PeerConnection = (function() {
@@ -58,7 +63,12 @@ const PeerConnection = (function() {
         // listen for ice candidate
         peerConnection.onicecandidate = function(event) {
             if(event.candidate){
-                socket.emit("icecandidate", event.candidate);
+                if(isRemoteDescriptionSet){
+                    sendICE(event.candidate)
+                }
+                else{
+                    iceQue.push(event.candidate)
+                }
             }
         }
 
@@ -82,11 +92,17 @@ socket.on("offer", async ({r_id, offer}) => {
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
     socket.emit("answer", {r_id, answer: pc.localDescription});
+    isRemoteDescriptionSet = true;
+    iceQue.forEach(sendICE);
+    iceQue = [];
 });
 
 socket.on("answer", async answer => {
     const pc = PeerConnection.getInstance();
     await pc.setRemoteDescription(answer)
+    isRemoteDescriptionSet = true;
+    iceQue.forEach(sendICE);
+    iceQue = [];
 });
 
 socket.on("icecandidate", async candidate => {
