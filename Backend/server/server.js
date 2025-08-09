@@ -90,7 +90,11 @@ io.on("connection", (socket) => {
         var userRoom = getRoomName(socket);
         socket.broadcast.to(userRoom).emit("colsed");
         socket.leave(userRoom);
-        activeRooms.push(userRoom);
+
+        if (getRoomSize(userRoom) === 1) {
+            activeRooms.push(userRoom);
+        }
+        
         joinRoom(socket);
         console.log("new room =", getRoomName(socket));
         console.log("[room] active Rooms = ", activeRooms);

@@ -1,8 +1,9 @@
 
-let localStream;
-let remoteStream = document.querySelector("#remoteVideo");
-let CUsers;
-let roomId;
+let localStream = null;
+let remoteStream = null;
+let localVideoEl = document.querySelector("#localVideo");
+let remoteVideoEl = document.querySelector("#remoteVideo");
+let roomId = null;
 let isRemoteDescriptionSet = false;
 let iceQue = [];
 
@@ -16,12 +17,10 @@ const constraints = {
 };
 
 var socket = io();
-const username = `session-${Math.random().toString(36).substr(2, 9)}`;
 
 socket.on("roomid", (id) => {
     roomId = id;
 });
-socket.emit('sessionId', username);
 
 function init() {
     document.querySelector('#nextBtn').addEventListener('click', next);
@@ -47,18 +46,24 @@ const PeerConnection = (function() {
         peerConnection = new RTCPeerConnection(config);
 
         // add local stream to peer connection
-        localStream.getTracks().forEach(track => {
-            peerConnection.addTrack(track, localStream);
-        })
+        if (localStream) {
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            })
+        }
+
+        remoteStream = new MediaStream();
+        remoteVideoEl.srcObject = remoteStream;
+
         // listen to remote stream and add to peer connection
         peerConnection.ontrack = function(event) {
             // hide loading video and show the actual stream
             document.querySelector("#loadingVideo").style.display = "none";
-            remoteStream.style.display = "block";
+            remoteVideoEl.style.display = "block";
 
             // assign the remote stream
-            remoteStream.style.transform = 'scaleX(-1)';
-            remoteStream.srcObject = event.streams[0];
+            remoteVideoEl.style.transform = 'scaleX(-1)';
+            event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track) );
         }
         // listen for ice candidate
         peerConnection.onicecandidate = function(event) {
@@ -114,7 +119,7 @@ socket.on("icecandidate", async candidate => {
 socket.on("colsed", () => {
     // show loading video, hide remote video
     document.querySelector("#loadingVideo").style.display = "block";
-    remoteStream.style.display = "none";
+    remoteVideoEl.style.display = "none";
 })
 
 async function startPeerConnection(e) {
@@ -131,7 +136,8 @@ async function openUserMedia(e) {
     // Set the video source to the webcam stream
     document.querySelector('#localVideo').style.transform = 'scaleX(-1)';
     localStream = stream;
-    document.querySelector('#localVideo').srcObject = stream;
+    localVideoEl.style.transform = 'scaleX(-1)';
+    localVideoEl.srcObject = stream;
 
     startPeerConnection();
 
@@ -147,7 +153,7 @@ async function next(e) {
     });
 }
 
-async function hangUp(e) {
+// async function hangUp(e) {
 //     const pc = PeerConnection.getInstance();
 //     if(pc) {
 //         pc.close();
@@ -163,7 +169,7 @@ async function hangUp(e) {
 
 //     // document.querySelector('#localVideo').srcObject = null;
 //     // document.querySelector('#remoteVideo').srcObject = null;
-}
+// }
 
 init();
 openUserMedia();
