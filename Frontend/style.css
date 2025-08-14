@@ -1,75 +1,105 @@
-body{
-    background-color: lightblue;
+body {
+    background-color: #000;
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    padding: 10px 20px;
+    margin: 0;
+    color: white;
 }
 
 #display {
-    display: flex; /* This aligns child elements in a horizontal row */
-    justify-content: space-around; /* Adjusts spacing between the boxes */
-    align-items: center; /* Aligns the boxes vertically (optional) */
-    /* height: 100vh; Optional: centers them vertically in the viewport */
-    margin: 10px;
-    margin-top: 70px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px;
+    gap: 20px;
 }
-  
-/* #cam1{
-    width: 700px;
-    height: 500px;
-    border: 2px solid black;
-    margin: 10px;
-    padding: 10px;
-    border-radius: 2px;
-} */
 
-#cam1 {
-    width: 640px;
-    height: 480px;
-    /* border: 2px solid #000; */
+.cam {
+    flex: 1 1 48%;
+    height: 400px;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     background-color: #eee;
+    border-radius: 10px;
+    max-width: 100%;
 }
-#video {
+
+#cam2 {
+    position: relative;
+}
+
+#loadingVideo {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-#cam2{
-    width: 640px;
-    height: 480px;
-    border: 2px solid #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
     background-color: #eee;
 }
 
-#heading{
-    text-align: center;
+#messageBox {
+    padding: 5px;
+    background-color: #000;
 }
 
-#nextBtn{
-    display: flex;
-    justify-content: flex-end;
-    margin-right: 65px;
-    margin-left: auto;
-    margin-top: 20px;
-}
-
-#startBtn{
-    display: flex;
-    justify-content: flex-start;
-    margin-left: 64px;
-    margin-right: auto;
-    margin-top: 20px;
+#messageArea {
+    font-weight: bold;
+    height: 140px;
+    margin-bottom: 5px;
+    overflow-y: auto;
+    border:#eee;
 }
 
 #button {
-    margin: 0.2em 0.1em;
     display: flex;
-    justify-content: space-around;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#message {
+    flex: 1;
+    min-width: 150px;
+    height: 40px;
+    /* padding: 5px; */
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+#nextBtn, #sentBtn {
+    height: 40px;
+    padding: 0 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+#nextBtn:hover, #sentBtn:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .cam {
+        flex: 1 1 100%;
+        height: 250px;
+    }
 }

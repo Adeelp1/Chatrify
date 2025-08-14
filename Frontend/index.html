@@ -4,30 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css">
     <title>Chatrify</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <h1 id="heading">Chatrify</h1>
+    <h1>Chatrify</h1>
 
-    <div>
-        <div id="display">
-            <div id="cam1">
-                <div id="video-container">
-                    <video id="localVideo" autoplay muted playsinline></video>
-                </div>
-            </div>
-            <div id="cam2">
-                <video id="remoteVideo" autoplay playsinline poster="images\loader1.gif"></video>
-                <img id="loadingVideo" src="images\loader1.gif" alt="Loading..." style="display: none; width: 200px;">
-            </div>
+    <div id="display">
+        <div class="cam" id="cam1">
+            <video id="localVideo" autoplay muted playsinline></video>
         </div>
-        <div id="button">
-            <button id="nextBtn">Next</button>
+        <div class="cam" id="cam2">
+            <video id="remoteVideo" autoplay playsinline></video>
+            <img id="loadingVideo" src="images\loader1.gif" alt="Loading...">
         </div>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
+    <div id="messageBox">
+        <div id="messageArea" style="color: white;">Message</div>
+        <div id="button">
+            <input type="text" name="message" id="message" placeholder="Type your message...">
+            <button id="sentBtn">Sent</button>
+            <button id="nextBtn">Skip</button>
+        </div>
+    </div>
+    
     <script src="app.js"></script>
 </body>
 </html>

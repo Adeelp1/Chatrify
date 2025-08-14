@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
     socket.on("changeRoom", () => {
         console.log("changeRoom");
         var userRoom = getRoomName(socket);
-        socket.broadcast.to(userRoom).emit("colsed");
+        socket.broadcast.to(userRoom).emit("closed");
         socket.leave(userRoom);
 
         if (getRoomSize(userRoom) === 1) {
@@ -104,7 +104,7 @@ io.on("connection", (socket) => {
     socket.on("disconnecting", () => {
         // const rooms = Array.from(socket.rooms);
         const userRoom = getRoomName(socket);
-        socket.broadcast.to(userRoom).emit("colsed");
+        socket.broadcast.to(userRoom).emit("closed");
         socket.leave(userRoom);
         if (getRoomSize(userRoom) == 1) {
             activeRooms.push(userRoom);
