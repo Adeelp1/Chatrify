@@ -57,10 +57,15 @@ video {
     background-color: #000;
 }
 
-#messageArea {
-    font-weight: bold;
+#messageWrapper {
+    position: relative; /* so the button can be positioned inside */
     height: 140px;
     margin-bottom: 5px;
+}
+
+#messageArea {
+    width: 100%;
+    height: 100%;
     overflow-y: auto;
     border:#eee;
 }
@@ -70,6 +75,22 @@ video {
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+#newMessageBtn {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+    z-index: 10;
 }
 
 #message {

@@ -76,12 +76,12 @@ io.on("connection", (socket) => {
     });
 
     socket.on("answer", ({r_id, answer}) => {
-        console.log(`answer: ${answer}`)
+        // console.log(`answer: ${answer}`)
         socket.broadcast.to(roomId).emit("answer", answer)
     });
 
     socket.on("icecandidate", candidate => {
-        console.log(`candidate: ${candidate}`)
+        // console.log(`candidate: ${candidate}`)
         socket.broadcast.to(roomId).emit("icecandidate", candidate);
     });
 

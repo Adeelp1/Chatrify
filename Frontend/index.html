@@ -7,6 +7,7 @@
     <title>Chatrify</title>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="images/icon.png">
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
@@ -23,7 +24,10 @@
     </div>
 
     <div id="messageBox">
-        <div id="messageArea" style="color: white;">Message</div>
+        <div id="messageWrapper">
+            <div id="messageArea" style="color: white;">Please Wait</div>
+            <button id="newMessageBtn">⬇ New Messages</button>
+        </div>
         <div id="button">
             <input type="text" name="message" id="message" placeholder="Type your message...">
             <button id="sentBtn">Sent</button>
