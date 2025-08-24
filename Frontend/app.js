@@ -1,7 +1,4 @@
 "use strict";
-// https://chatgpt.com/share/68a1ee78-cd50-800d-b6eb-bee19453eadf
-// use this link to understand the error. and check previous code to find what is actual problem. 
-// check how write next function in previous commit. 
 
 const socket = io();
 
@@ -23,12 +20,12 @@ const messageArea = document.getElementById("messageArea");
 const loadingVideo = document.querySelector("#loadingVideo");
 const newMessageBtn = document.getElementById("newMessageBtn");
 const constraints = {
-  video: {
-    width: { ideal: 1280 },
-    height: { ideal: 720 },
-    frameRate: { ideal: 30 },
-  },
-  audio: true,
+    audio: true,
+    video: {
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        frameRate: { ideal: 30 },
+    },
 };
 
 socket.on("roomid", (id) => {
@@ -46,7 +43,7 @@ function sendICE(candidate) {
     socket.emit("icecandidate", candidate);
 }
 
-async function startPeerConnection(e) {
+async function startPeerConnection() {
     const pc = PeerConnection.getInstance();
     const offer = await pc.createOffer();
     console.log(`offer: ${offer}`);
@@ -54,8 +51,15 @@ async function startPeerConnection(e) {
     socket.emit("offer", {r_id: roomId, offer: pc.localDescription});
 }
 
+function closeConnection() {
+    const pc = PeerConnection.getInstance();
+    dataChannel.close();
+    channel = null;
+    pc.close();
+}
+
 // Request access to the webcam
-async function openUserMedia(e) {
+async function openUserMedia() {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     // Set the video source to the webcam stream
     document.querySelector('#localVideo').style.transform = 'scaleX(-1)';
@@ -68,13 +72,9 @@ async function openUserMedia(e) {
     console.log('Stream: ', document.querySelector('#localVideo').srcObject);
 }
 
-async function next(e) {
-    const pc = PeerConnection.getInstance();
-    await pc.close();
+ function next() {
+    closeConnection();
     socket.emit("changeRoom");
-    socket.on("restartIce", async () => {
-        startPeerConnection();
-    });
 }
 
 function handleAction(event) {
@@ -105,7 +105,6 @@ function sentMessage() {
         if (channel && dataChannel.onopen) {
             channel.send(msg)
         }
-        console.log("message: ", msg)
         displayMessage("You", msg);
     }
 }
@@ -240,10 +239,13 @@ socket.on("icecandidate", async candidate => {
 });
 
 socket.on("closed", () => {
+    closeConnection();
     // show loading video, hide remote video
     loadingVideo.style.display = "block";
     remoteVideoEl.style.display = "none";
-})
+});
+
+socket.on("restartIce", () => startPeerConnection());
 
 // async function hangUp(e) {
 //     const pc = PeerConnection.getInstance();
