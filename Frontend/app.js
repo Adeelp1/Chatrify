@@ -247,23 +247,5 @@ socket.on("closed", () => {
 
 socket.on("restartIce", () => startPeerConnection());
 
-// async function hangUp(e) {
-//     const pc = PeerConnection.getInstance();
-//     if(pc) {
-//         pc.close();
-//     }
-//     const tracks = document.querySelector('#localVideo').srcObject.getTracks();
-//     tracks.forEach(track => {
-//         track.stop();
-//     });
-
-//     if (remoteStream) {
-//         remoteStream.getTracks().forEach(track => track.stop());
-//     }
-
-//     // document.querySelector('#localVideo').srcObject = null;
-//     // document.querySelector('#remoteVideo').srcObject = null;
-// }
-
 init();
 openUserMedia();
