@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Signup Form</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px;
+    }
+    form {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 450px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #444;
+    }
+    input, select {
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: #4CAF50;
+      box-shadow: 0 0 5px rgba(76,175,80,0.4);
+      outline: none;
+    }
+    #username, #email, #password, #confirm_password, #first_name, #last_name, #display_name, #gender, #country {
+        width: 100%;
+    }
+    .step {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .step.active {
+      display: block;
+      opacity: 1;
+    }
+    .actions {
+      margin-top: 25px;
+      display: flex;
+      justify-content: space-between;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-next {
+      background: #4CAF50;
+      color: white;
+    }
+    .btn-next:disabled {
+      background: #a5d6a7;
+      cursor: not-allowed;
+    }
+    .btn-prev {
+      background: #ddd;
+    }
+    .progress {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .circle {
+      width: 12px;
+      height: 12px;
+      background: #ccc;
+      border-radius: 50%;
+      margin: 0 5px;
+      transition: background 0.3s;
+    }
+    .circle.active {
+      background: #4CAF50;
+    }
+    .strength {
+      margin-top: 6px;
+      height: 6px;
+      border-radius: 4px;
+      background: #ddd;
+      overflow: hidden;
+    }
+    .strength-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(to right, #f44336, #ff9800, #4CAF50, #2e7d32);
+      transition: width 0.3s;
+    }
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+    fieldset {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 15px;
+    }
+    legend {
+      font-weight: 600;
+    }
+    .checkboxes label {
+      display: block;
+      font-weight: normal;
+      margin-top: 6px;
+    }
+    .checkboxes input {
+      margin-right: 6px;
+    }
+    @media (max-width: 500px) {
+      form { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<form id="signupForm" novalidate>
+  <div class="progress">
+    <div class="circle active"></div>
+    <div class="circle"></div>
+  </div>
+  <h2>Create Account</h2>
+
+  <!-- Step 1 -->
+  <div class="step active">
+    <label>Username *</label>
+    <input type="text" id="username" name="username" pattern="[a-z0-9._\-]+" required>
+    <div class="error" id="usernameFeedback"></div>
+
+    <label>Email *</label>
+    <input type="email" id="email" name="email" required>
+    <div class="error" id="emailFeedback"></div>
+
+    <label>Password *</label>
+    <input type="password" id="password" name="password" minlength="8" required>
+    <div class="strength"><div class="strength-bar" id="strengthBar"></div></div>
+
+    <label>Confirm Password *</label>
+    <input type="password" id="confirm_password" name="confirm_password" required>
+    <div class="error" id="passwordFeedback"></div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step">
+    <label>First Name</label>
+    <input type="text" name="first_name" id="first_name">
+
+    <label>Last Name</label>
+    <input type="text" name="last_name" id="last_name">
+
+    <label>Display Name</label>
+    <input type="text" name="display_name" id="display_name">
+
+    <label>Gender</label>
+    <select name="gender" id="gender">
+      <option value="">Prefer not to say</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+    <label>Country *</label>
+    <select name="country" id="country" required>
+    <option value="">Select your country</option>
+    <option value="US">United States</option>
+    <option value="IN">India</option>
+    <option value="UK">United Kingdom</option>
+    <option value="CA">Canada</option>
+    <option value="AU">Australia</option>
+    <option value="DE">Germany</option>
+    <option value="FR">France</option>
+    <option value="BR">Brazil</option>
+    <option value="JP">Japan</option>
+    <option value="CN">China</option>
+    <option value="ZA">South Africa</option>
+    </select>
+
+    <fieldset>
+      <legend>Interests</legend>
+      <div class="checkboxes">
+        <label><input type="checkbox" name="interests" value="music"> Music</label>
+        <label><input type="checkbox" name="interests" value="gaming"> Gaming</label>
+        <label><input type="checkbox" name="interests" value="sports"> Sports</label>
+        <label><input type="checkbox" name="interests" value="movies"> Movies</label>
+      </div>
+    </fieldset>
+
+    <label><input type="checkbox" id="terms" required> I agree to the Terms & Privacy Policy</label>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn-prev" id="prevBtn" style="display:none;">Back</button>
+    <button type="button" class="btn-next" id="nextBtn" disabled>Next</button>
+  </div>
+</form>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const countrySelect = document.getElementById("country");
+
+    // Browser locale (like "en-US" → "US")
+    const locale = navigator.language || navigator.userLanguage;
+    const countryCode = locale.split("-")[1];  
+
+    if (countryCode) {
+      for (let option of countrySelect.options) {
+        if (option.value === countryCode.toUpperCase()) {
+          option.selected = true;
+          break;
+        }
+      }
+    }
+  });
+</script>
+<script>
+  const steps = document.querySelectorAll('.step');
+  const circles = document.querySelectorAll('.circle');
+  let currentStep = 0;
+
+  const form = document.getElementById('signupForm');
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const usernameField = document.getElementById('username');
+  const emailField = document.getElementById('email');
+  const passwordField = document.getElementById('password');
+  const confirmField = document.getElementById('confirm_password');
+  const usernameFeedback = document.getElementById('usernameFeedback');
+  const emailFeedback = document.getElementById('emailFeedback');
+  const passwordFeedback = document.getElementById('passwordFeedback');
+  const strengthBar = document.getElementById('strengthBar');
+
+  function showStep(index) {
+    steps.forEach((s, i) => s.classList.toggle('active', i === index));
+    circles.forEach((c, i) => c.classList.toggle('active', i <= index));
+    prevBtn.style.display = index > 0 ? "inline-block" : "none";
+    nextBtn.textContent = index === steps.length - 1 ? "Sign Up" : "Next";
+    validateStep(); // update button state
+  }
+
+  function validateStep() {
+    let valid = true;
+    if (currentStep === 0) {
+      if (!usernameField.checkValidity()) valid = false;
+      if (!emailField.checkValidity()) valid = false;
+      if (!passwordField.checkValidity()) valid = false;
+      if (passwordField.value !== confirmField.value || !confirmField.value) valid = false;
+    }
+    if (currentStep === 1) {
+      const terms = document.getElementById('terms');
+      if (!terms.checked) valid = false;
+    }
+    nextBtn.disabled = !valid;
+  }
+
+  nextBtn.addEventListener('click', async() => {
+    if (currentStep === steps.length - 1) {
+      // Submit
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((v, k) => {
+        if (data[k]) {
+          if (Array.isArray(data[k])) data[k].push(v);
+          else data[k] = [data[k], v];
+        } else data[k] = v;
+      });
+      console.log("Collected data:", data);
+      const res = await fetch("http://localhost:3000/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            const response = await res.json();
+            if (response.message) {
+                alert("✅ Account created! (Check console for details)");
+                window.location.href = 'login.html';
+            }
+            else {
+                alert(response.err)
+            }
+    } else {
+      currentStep++;
+      showStep(currentStep);
+    }
+  });
+
+  prevBtn.addEventListener('click', () => {
+    currentStep--;
+    showStep(currentStep);
+  });
+
+  // Inline validation
+  usernameField.addEventListener('input', () => {
+    if (!usernameField.checkValidity()) {
+      usernameFeedback.textContent = "3-30 chars, lowercase, numbers, . _ - only";
+    } else if (usernameField.value.toLowerCase() === "admin") {
+      usernameFeedback.textContent = "Username is taken.";
+    } else {
+      usernameFeedback.textContent = "";
+    }
+    validateStep();
+  });
+
+  emailField.addEventListener('input', () => {
+    emailFeedback.textContent = emailField.checkValidity() ? "" : "Enter a valid email";
+    validateStep();
+  });
+
+  function checkPasswords() {
+    if (passwordField.value !== confirmField.value && confirmField.value) {
+      passwordFeedback.textContent = "Passwords do not match!";
+    } else {
+      passwordFeedback.textContent = "";
+    }
+    validateStep();
+  }
+
+  passwordField.addEventListener('input', () => {
+    const val = passwordField.value;
+    let strength = 0;
+    if (val.length >= 8) strength++;
+    if (/[A-Z]/.test(val)) strength++;
+    if (/[0-9]/.test(val)) strength++;
+    if (/[^A-Za-z0-9]/.test(val)) strength++;
+    strengthBar.style.width = (strength/4)*100 + "%";
+    checkPasswords();
+  });
+
+  confirmField.addEventListener('input', checkPasswords);
+
+  document.getElementById('terms').addEventListener('change', validateStep);
+</script>
+
+</body>
+</html>

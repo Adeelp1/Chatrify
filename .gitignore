@@ -1,2 +1,5 @@
 node_modules/
 filters/
+chatrify.db
+.workflow
+.env

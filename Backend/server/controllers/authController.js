@@ -1,0 +1,113 @@
+'use strict';
+
+const { hashPassword, comparePassword } = require("../utils/hash");
+const userAccount = require('../models/user_account_model');
+const userProfile = require('../models/user_profile_model');
+const { setNewSession, isUserExits } = require("../utils/session");
+
+async function signupUser(req, res) {
+    const {
+        confirm_password,
+        country,
+        display_name,
+        email,
+        first_name,
+        gender,
+        interests,
+        last_name,
+        password,
+        username
+    } = req.body;
+    
+    if (!username || !email || !password) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Check if user already exists
+    const existing = await userAccount.searchByEmail(email);
+    if(existing) {
+        return res.status(400).json({ error: "User already exists" });
+    }
+
+    // Hash password before storing
+    const hashedPassword = await hashPassword(password);
+    // store user in db
+    await userAccount.createUser(username, email, hashedPassword);
+    const user = await userAccount.searchByEmail(email);
+    await userProfile.createUserProfile(user.user_id, first_name, last_name, display_name, gender, country, interests);
+    console.log("userProfile success");
+
+    res.json({ message: "Signup successful!" });
+    console.log("signup successful");
+}
+
+async function loginUser(req, res) {
+    const {username, email, password} = req.body;
+
+    const identifier = email ? 'email': username ? 'username' : null;  
+    if (!identifier) {
+        return res.status(400).json({ error: "email or username field is required" });
+    }
+
+    // Check if user exists
+    const user = identifier === 'email'
+        ? await userAccount.searchByEmail(email) 
+        : await userAccount.searchByUsername(username);
+    
+    if (!user) {
+        return res.status(404).json({ error: "User does not exist" });
+    }
+
+    const _userId = user.user_id; 
+
+    const userPassword = user.password_hash;
+
+    // Compare entered password with stored hash
+    const match = await comparePassword(password, userPassword);
+    
+    if (match) {
+        const sessionId = await setNewSession(_userId);
+        console.log("Login successful");
+        res.cookie("sessionId", sessionId, {
+            httpOnly: true, // prevents JS access
+            secure: false, // set true if using HTTPS
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+        });
+        req.session.userId = _userId;
+        return res.json({ message: "Login successful!" });
+    }
+    else
+        return res.json({ error: "Incorrect password" });   
+
+}
+
+async function autoLoign(req, res) {
+    let sessionId;
+    try {
+        sessionId = req.cookies.sessionId;
+    }
+    catch {
+        return res.json({ error: "sessionId doesn't exist" });
+    }
+    const isUser = await isUserExits(sessionId);
+    if(isUser){
+        // console.log("got to index.html", isUser);
+        return res.json({ message: "User exist" });
+    }
+    else {
+        // console.log("got to login.html", isUser);
+        return res.json({ error: "User doesn't exist" });
+    }
+}
+
+async function logoutUser(req, res) {
+    res.clearCookie("sessionId");
+}
+
+module.exports = {
+    autoLoign,
+    loginUser,
+    signupUser,
+    logoutUser
+};

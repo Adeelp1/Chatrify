@@ -9,6 +9,24 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="images/icon.png">
     
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            const res = await fetch("http://localhost:3000/", {
+                method: "POST",
+                credentials: "include", // ensures cookies are sent
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({})
+            });
+
+            const data = await res.json();
+            if (!data.message) {
+                window.location.href = 'login.html';
+                // console.log("go to login.html");
+            }
+        });
+    </script>
     <script src="/socket.io/socket.io.js"></script>
     <script defer src="app.js"></script>
 </head>
