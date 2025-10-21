@@ -42,7 +42,7 @@ async function signupUser(req, res) {
 }
 
 async function loginUser(req, res) {
-    const {username, email, password} = req.body;
+    const { username, email, password } = req.body;
 
     const identifier = email ? 'email': username ? 'username' : null;  
     if (!identifier) {

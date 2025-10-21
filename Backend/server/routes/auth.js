@@ -9,7 +9,7 @@ const {
     logoutUser
 } = require("../controllers/authController");
 
-// Auto login route
+// AutoLogin route
 router.post("/", autoLoign);
 
 // Signup route

@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 // const cors = require("cors");
 
 const authRoutes = require("./routes/auth");
-const db = require('./db');
+const db = require('./config/db');
 const initDB = require("./models/init");
 const { sessionMiddleware } = require("./middleware/sessionMiddleware");
 
@@ -141,10 +141,10 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnecting", () => {
-        // const rooms = Array.from(socket.rooms);
         const userRoom = getRoomName(socket);
         socket.broadcast.to(userRoom).emit("closed");
         socket.leave(userRoom);
+        user_queue_map.delete(socket.userId);
         if (getRoomSize(userRoom) == 1) {
             activeRooms.push(userRoom);
         }

@@ -1,6 +1,6 @@
 'use strict';
 
-const db = require('../db');
+const db = require('../config/db');
 const { run, get, all } = require('../utils/crudHelper');
 // const user_matchmaking = require("./user_matchmaking_model"); // don't remove, this is used for creating user_matchmaking table
 

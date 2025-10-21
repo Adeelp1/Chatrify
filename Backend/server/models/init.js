@@ -1,6 +1,6 @@
 'use strict';
 
-const db = require('../db');
+const db = require('../config/db');
 const { initUser } = require('./user_account_model');
 const { initUserMatchMacking } = require('./user_matchmaking_model');
 const { initUserSession } = require('./user_session_model');
