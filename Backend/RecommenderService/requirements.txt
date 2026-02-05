@@ -1,0 +1,4 @@
+qdrant-client==1.15.1
+fastapi==0.120.2
+sentence-transformers==5.1.2
+uvicorn==0.38.0
