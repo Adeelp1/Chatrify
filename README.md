@@ -42,14 +42,15 @@
 
 ## 📌 Overview
 
-**Chatrify** is a real-time communication and matchmaking platform inspired by instant video chat applications.
+**Chatrify** is a comprehensive developer toolkit designed to facilitate the creation of real-time communication, matchmaking, and personalized experiences. It seamlessly integrates WebRTC for peer-to-peer video and audio, robust backend services for scalable chat and user management, and intelligent matchmaking with vector similarity search and Redis queues.
 
-It is designed as a **developer-friendly, scalable toolkit** that combines:
+This project simplifies the development of interactive, real-time applications. The core features include:
 
-- Peer-to-peer video & audio using **WebRTC**
-- Real-time messaging using **Socket.IO**
-- Intelligent matchmaking using **Redis queues & vector similarity**
-- Modular microservices architecture for scalability
+- **🎯 Matchmaking & Recommendations:** Efficiently pair users with personalized suggestions using Redis queues and vector similarity.
+- **🔗 WebRTC Signaling:** Manage real-time media streams with WebRTC and Socket.IO for smooth peer-to-peer communication.
+- **⚙️ Scalable Backend:** Built with Express, Redis, and modular models to support secure, high-performance chat and user sessions.
+- **💬 Frontend Integration:** User-friendly interfaces for registration, login, and media interaction.
+- **🔐 Secure & Modular:** Designed for easy extension, ensuring secure, reliable, and maintainable real-time apps.
 
 ---
 
