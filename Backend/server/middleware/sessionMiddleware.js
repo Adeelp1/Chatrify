@@ -1,4 +1,4 @@
-'use strickt';
+'use strict';
 
 const session = require("express-session");
 require("dotenv").config();

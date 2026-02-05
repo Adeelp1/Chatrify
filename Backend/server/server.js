@@ -2,29 +2,35 @@
 
 const express = require("express");
 const http = require("http");
-const socketIO = require("socket.io");
+// const socketIO = require("socket.io");
 const path = require("path");
 const cookieParser = require("cookie-parser");
-// const cors = require("cors");
 
-const authRoutes = require("./routes/auth");
-const db = require('./config/db');
+const { initSocketIO, getSocketIO,  } = require("./socket/index");
 const initDB = require("./models/init");
-const { sessionMiddleware } = require("./middleware/sessionMiddleware");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server, {
-    cors: {
-        Credential: true
-    }
-});
+initSocketIO(server);
+const io = getSocketIO();
 
-const port = 3000
+require("dotenv").config();
+initDB();
+
+const authRoutes = require("./routes/auth");
+const matchMakingRoute = require('./routes/matchmakin.route');
+const { sessionMiddleware } = require("./middleware/sessionMiddleware");
+const { addNewConnectedUser, removeDisconnectedUser } = require('./utils/userServiceHelper');
+const { redis_client, connectRedis} = require('./db/redisClient');
+const { closeDB } = require('./utils/crudHelper');
+const { user_socket_map, getRoomName } = require("./services/socket.service");
+
+
+const PORT = 3000
 
 var activeUsers = 0;
-var activeRooms = [];
-var user_queue_map = new Map();
+// var activeRooms = [];
+
 var roomId;
 var roomCounter = 0;
 // var clients = {};
@@ -41,45 +47,13 @@ io.use((socket, next) => {
 });
 
 // Routes
+app.use("/api", matchMakingRoute);
 app.use("/", authRoutes);
 
 // Serve static files from the 'frontend' folder
 app.use(express.static(path.join(__dirname, '../../Frontend')));
 
-function generateRoomName() {
-    roomCounter += 1; 
-    return 'room-' + roomCounter;
-}
-
-function getRoomSize(r_id) {
-    try {
-        return io.sockets.adapter.rooms.get(r_id).size;
-    } catch (error) {
-        return 0;
-    } 
-}
-
-function getRoomName(socketId) {
-    const rooms = Array.from(socketId.rooms);
-    return rooms[1];
-}
-
-function joinRoom(socketId) {
-    if (activeRooms.length === 0) {
-        roomId = generateRoomName();
-        activeRooms.push(roomId);
-        socketId.join(roomId);
-    }
-    else {
-        roomId = activeRooms[0];
-        socketId.join(roomId);
-        if (getRoomSize(roomId) == 2) {
-            activeRooms.shift();
-        }
-    }
-}
-
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
     const session = socket.request.session;
 
     if (!session.userId) {
@@ -91,11 +65,15 @@ io.on("connection", (socket) => {
     activeUsers += 1;
     socket.userId = session.userId;
     // user_queue.push(socket.id);
-    user_queue_map.set(socket.userId, socket.id); // for recomendation engine
-
+    user_socket_map.set(socket.userId, socket.id); // for matchmaking service
+    // user_queue.push(socket.userId);
+    
     console.log("New connection established", activeUsers);
     
-    joinRoom(socket);
+    // info Recommend and Matchmaking Services that new user is active
+    await addNewConnectedUser(socket.userId);
+    
+    // joinRoom(socket);
 
     // Session id
     // socket.on('sessionId', async (session) => {
@@ -124,51 +102,66 @@ io.on("connection", (socket) => {
         socket.broadcast.to(roomId).emit("icecandidate", candidate);
     });
 
-    socket.on("changeRoom", () => {
+    socket.on("changeRoom", async () => {
         console.log("changeRoom");
         var userRoom = getRoomName(socket);
         socket.broadcast.to(userRoom).emit("closed");
         socket.leave(userRoom);
-
-        if (getRoomSize(userRoom) === 1) {
-            activeRooms.push(userRoom);
-        }
         
-        joinRoom(socket);
-        console.log("new room =", getRoomName(socket));
-        console.log("[room] active Rooms = ", activeRooms);
+        // joinRoom(socket);
+        await addNewConnectedUser(socket.userId);
+        // console.log("new room =", getRoomName(socket));
         socket.emit("restartIce");
     });
 
-    socket.on("disconnecting", () => {
+    socket.on("disconnecting", async () => {
         const userRoom = getRoomName(socket);
         socket.broadcast.to(userRoom).emit("closed");
         socket.leave(userRoom);
-        user_queue_map.delete(socket.userId);
-        if (getRoomSize(userRoom) == 1) {
-            activeRooms.push(userRoom);
-        }
         console.log("roomId", userRoom);
+        
+        user_socket_map.delete(socket.userId);
+        // info Recommend and Matchmaking Services that the user is disconnected
+        await removeDisconnectedUser(socket.userId);
     });
 
     socket.on("disconnect", () => {
         activeUsers -= 1;
-        const roomSize = getRoomSize(roomId);
         console.log("[connection closed]",socket.id, activeUsers);
-        console.log("room size", roomSize);
         // delete clients[socket.id];
     });
 });
 
-initDB();
-server.listen(port, () => {
+server.listen(PORT, () => {
     console.log("server connected");
 });
 
-process.on('SIGINT', () => {
-    db.close((err) => {
-        if (err) console.error(err.message);
-        console.log("closed the database connection.");
-        process.exit(0);
-    });
-}); 
+process.on("SIGINT", async () => {
+  console.log("\nShutting down...");
+  await connectRedis();
+
+  try {
+    // Close DB 
+    await closeDB()
+
+    // Redis cleanup
+    const queueName = process.env.REDIS_QUEUE_NAME;
+    let len = await redis_client.LLEN(queueName);
+    console.log(`Before cleanup: ${len} items in Redis`);
+    
+    await redis_client.flushDb();
+    console.log("Redis DB cleared");
+
+    len = await redis_client.LLEN(queueName);
+    console.log(`After cleanup: ${len} items in Redis`);
+
+    // Close Redis connection
+    await redis_client.quit();
+    console.log("Redis connection closed")
+
+  } catch (err) {
+    console.error("Shutdown error:", err);
+  } finally {
+    process.exit(0);
+  }
+});

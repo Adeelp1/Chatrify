@@ -3,3 +3,6 @@ filters/
 chatrify.db
 .workflow
 .env
+venv
+__pycache__
+qdrant DB/

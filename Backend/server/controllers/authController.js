@@ -4,6 +4,7 @@ const { hashPassword, comparePassword } = require("../utils/hash");
 const userAccount = require('../models/user_account_model');
 const userProfile = require('../models/user_profile_model');
 const { setNewSession, isUserExits } = require("../utils/session");
+const { createUserEmbedgingsAndStore } = require('../client/recommenderClient');
 
 async function signupUser(req, res) {
     const {
@@ -36,6 +37,9 @@ async function signupUser(req, res) {
     const user = await userAccount.searchByEmail(email);
     await userProfile.createUserProfile(user.user_id, first_name, last_name, display_name, gender, country, interests);
     console.log("userProfile success");
+
+    // store user embedding in RecommendService
+    createUserEmbedgingsAndStore(user.user_id, interests);
 
     res.json({ message: "Signup successful!" });
     console.log("signup successful");

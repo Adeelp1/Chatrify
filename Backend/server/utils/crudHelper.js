@@ -29,4 +29,13 @@ function all(query) {
     });
 }
 
-module.exports = { run, get, all }
+function closeDB() {
+    return new Promise((resolve, reject) => {
+        db.close(err => {
+            console.log("Database connection closed.");
+            resolve();
+        });
+    });
+}
+
+module.exports = { run, get, all, closeDB }
