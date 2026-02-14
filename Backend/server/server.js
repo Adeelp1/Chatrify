@@ -32,7 +32,7 @@ var activeUsers = 0;
 // var activeRooms = [];
 
 var roomId;
-var roomCounter = 0;
+// var roomCounter = 0;
 // var clients = {};
 // var user_queue = [];
 
@@ -89,17 +89,20 @@ io.on("connection", async (socket) => {
     // });
 
     socket.on("offer", ({r_id, offer}) => {
-        socket.broadcast.to(roomId).emit("offer", {r_id, offer});
+        console.log(`offer: ${offer}`)
+        socket.broadcast.to(r_id).emit("offer", {r_id, offer});
     });
 
     socket.on("answer", ({r_id, answer}) => {
+        console.log("room from answe " + r_id);
         // console.log(`answer: ${answer}`)
-        socket.broadcast.to(roomId).emit("answer", answer)
+        socket.broadcast.to(r_id).emit("answer", {r_id, answer})
     });
 
-    socket.on("icecandidate", candidate => {
+    socket.on("icecandidate", ({r_id, candidate}) => {
+        console.log("room from icecandidate " + r_id);
         // console.log(`candidate: ${candidate}`)
-        socket.broadcast.to(roomId).emit("icecandidate", candidate);
+        socket.broadcast.to(r_id).emit("icecandidate", candidate);
     });
 
     socket.on("changeRoom", async () => {

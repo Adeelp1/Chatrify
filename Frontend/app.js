@@ -2,20 +2,11 @@
 
 const socket = io();
 
-let localStream = null;
-let remoteStream = null;
-let roomId = null;
-let dataChannel = null; 
-let channel = null;
-
-let isRemoteDescriptionSet = false;
-let iceQue = [];
-
 const localVideoEl = document.querySelector("#localVideo");
 const remoteVideoEl = document.querySelector("#remoteVideo");
 const inputfield = document.getElementById("message")
 const nexBtn = document.getElementById("nextBtn");
-const skipBtn = document.getElementById("sentBtn");
+const sentBtn = document.getElementById("sentBtn");
 const messageArea = document.getElementById("messageArea");
 const loadingVideo = document.querySelector("#loadingVideo");
 const newMessageBtn = document.getElementById("newMessageBtn");
@@ -28,33 +19,48 @@ const constraints = {
     },
 };
 
-socket.on("roomid", (id) => {
-    roomId = id;
-});
+let localStream = null;
+let remoteStream = null;
+let roomId = null;
+let chatChannel = null;
+let isRemoteDescriptionSet = false;
+let iceQue = [];
+
+messageArea.textContent = '';
 
 function init() {
     nexBtn.addEventListener('click', next);
-    skipBtn.addEventListener('click', handleAction);
+    sentBtn.addEventListener('click', handleAction);
     inputfield.addEventListener('keydown', handleAction);
     newMessageBtn.addEventListener('click', scrollToBottom);
 }
 
 function sendICE(candidate) {
-    socket.emit("icecandidate", candidate);
+    socket.emit("icecandidate", {r_id: roomId, candidate: candidate});
 }
 
 async function startPeerConnection() {
     const pc = PeerConnection.getInstance();
+
+    // Only the offerer runs this:
+    chatChannel = pc.createDataChannel("chat");
+    setupChannelEvents(chatChannel);
+
     const offer = await pc.createOffer();
-    console.log(`offer: ${offer}`);
+    console.log(`offer: ${offer} ${roomId}`);
     await pc.setLocalDescription(offer);
-    socket.emit("offer", {r_id: roomId, offer: pc.localDescription});
+    const localDescription = pc.localDescription
+    socket.emit("offer", {r_id: roomId, offer: localDescription});
 }
 
 function closeConnection() {
     const pc = PeerConnection.getInstance();
-    dataChannel.close();
-    channel = null;
+
+    if (chatChannel) {
+        chatChannel.close();
+        chatChannel = null;
+    }
+
     pc.close();
 }
 
@@ -66,8 +72,6 @@ async function openUserMedia() {
     localStream = stream;
     localVideoEl.style.transform = 'scaleX(-1)';
     localVideoEl.srcObject = stream;
-
-    startPeerConnection();
 
     console.log('Stream: ', document.querySelector('#localVideo').srcObject);
 }
@@ -100,12 +104,14 @@ function scrollToBottom() {
 
 function sentMessage() {
     var msg = inputfield.value;
+    if (!msg) return;
 
-    if (msg !== '') {
-        if (channel && dataChannel.onopen) {
-            channel.send(msg)
-        }
+    // const dc = chatChannel
+
+    if (msg && chatChannel && chatChannel.readyState === "open") {
+        chatChannel.send(msg);
         displayMessage("You", msg);
+        inputfield.value = '';
     }
 }
 
@@ -131,8 +137,8 @@ function displayMessage(user, msg) {
         scrollToBottom();
     }
 
-    // clear input field
-    inputfield.value = '';
+    // // clear input field
+    // inputfield.value = '';
 }
 
 // Peer Connection
@@ -149,27 +155,11 @@ const PeerConnection = (function() {
         };
 
         peerConnection = new RTCPeerConnection(config);
-        dataChannel = peerConnection.createDataChannel("chat");
-
-        dataChannel.onopen = () => {
-            console.log("data channel is open");
-            // clear previous chats
-            messageArea.textContent = '';
-        }
-
-        dataChannel.onclose = () => {
-            console.log("data channel is closed");
-            // clear previous chats
-            messageArea.textContent = "Please Wait";
-        }
 
         peerConnection.ondatachannel = (event) => {
-            channel = event.channel;
-            // console.log("DataChannel received on B:", channel.label);
-            dataChannel.onmessage = (msg) => {
-                displayMessage("Stranger", msg.data)
-            }
-        }
+            chatChannel = event.channel;
+            setupChannelEvents(chatChannel)
+        };
 
         // add local stream to peer connection
         if (localStream) {
@@ -188,15 +178,19 @@ const PeerConnection = (function() {
             remoteVideoEl.style.display = "block";
 
             // assign the remote stream
-            remoteVideoEl.style.transform = 'scaleX(-1)';
+            // remoteVideoEl.style.transform = 'scaleX(-1)';
             event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track) );
         }
         // listen for ice candidate
         peerConnection.onicecandidate = function(event) {
-            if(event.candidate){
-                    iceQue.push(event.candidate);
+            if (!event.candidate) return;
+
+            if(isRemoteDescriptionSet){
+                sendICE(event.candidate)
+            } else {
+                iceQue.push(event.candidate);
             }
-        }
+        };
 
         return peerConnection;
     }
@@ -204,7 +198,7 @@ const PeerConnection = (function() {
     return {
         getInstance: () => {
             if(!peerConnection || peerConnection.connectionState === "closed") {
-                dataChannel = null;
+                chatChannel = null;
                 peerConnection = createPeerConnection();
             }
             return peerConnection;
@@ -212,19 +206,46 @@ const PeerConnection = (function() {
     }
 })();
 
+// Helper function to handle events for BOTH peers
+function setupChannelEvents(channel) {
+    // dataChannel = peerConnection.createDataChannel("chat");
+        channel.onopen = () => {
+            // clear previous chats
+            messageArea.textContent = '';
+            console.log("data channel is open");
+        }
+        channel.onmessage = (msg) => displayMessage("Stranger", msg.data);
+        channel.onclose = () => {
+            // console.log("data channel is closed");
+            // clear previous chats
+            messageArea.textContent = "Please Wait";
+        }
+}
+
+socket.on("roomid", (id) => {
+    roomId = id.room;
+    console.log(roomId);
+});
+
+socket.on("start", () => {
+    startPeerConnection();
+    console.log("started");
+})
+
 socket.on("offer", async ({r_id, offer}) => {
+    console.log("offer called")
     const pc = PeerConnection.getInstance();
     // set remote description
     await pc.setRemoteDescription(offer);
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
-    socket.emit("answer", {r_id, answer: pc.localDescription});
+    socket.emit("answer", {r_id: r_id, answer: pc.localDescription});
     isRemoteDescriptionSet = true;
     iceQue.forEach(sendICE);
     iceQue = [];
 });
 
-socket.on("answer", async answer => {
+socket.on("answer", async ({r_id, answer}) => {
     const pc = PeerConnection.getInstance();
     await pc.setRemoteDescription(answer)
     isRemoteDescriptionSet = true;

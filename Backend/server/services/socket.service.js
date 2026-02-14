@@ -4,6 +4,7 @@ const { getSocketIO } = require("../socket/index");
 
 let io = getSocketIO();
 let roomCounter = 0;
+let roomID;
 var user_socket_map = new Map();
 
 function generateRoomName() {
@@ -44,6 +45,12 @@ function joinRoom(userId, recommendedUserId) {
     let room = generateRoomName();
     userA.join(room);
     userB.join(room);
+
+    userA.emit("roomid", {room});
+    userB.emit("roomid", {room});
+    console.log(room)
+    userA.emit("start");
+    // userB.emit("start");
 
     return true;
 }
