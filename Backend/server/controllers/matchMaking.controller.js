@@ -5,7 +5,7 @@ function matchUser(req, res) {
     try {
         const { userA, userB } = req.body;
         console.log(req.body);
-        console.log(userA, userB)
+        console.log("matchUser users:", userA, userB);
 
         // validation
         if (!userA || !userB) {
