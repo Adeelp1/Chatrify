@@ -5,6 +5,7 @@ const http = require("http");
 // const socketIO = require("socket.io");
 const path = require("path");
 const cookieParser = require("cookie-parser");
+const lusca = require("lusca");
 
 const { initSocketIO, getSocketIO,  } = require("./socket/index");
 const initDB = require("./models/init");
@@ -40,6 +41,7 @@ var roomId;
 app.use(express.json()); // to read JSON body
 app.use(cookieParser()); // parse cookies from incoming requests
 app.use(sessionMiddleware);
+app.use(lusca.csrf());
 // app.use(cors());
 
 io.use((socket, next) => {
