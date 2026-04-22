@@ -1,24 +1,28 @@
-'use strict';
+import { createClient } from "redis";
+import dotenv from "dotenv";
 
-const { createClient } = require('redis');
-require("dotenv").config();
+dotenv.config();
 
-const redis_client = createClient({
+export const redis_client = createClient({
     username: process.env.REDIS_REST_USERNAME,
     password: process.env.REDIS_REST_PASSWORD,
     socket: { 
         host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT
+        port: process.env.REDIS_PORT,
+        reconnectStrategy: (retries) => {
+            if (retries > 5) return new Error("Retry limit reached");
+            return 1000;
+        }
     }
-})
+});
 
-redis_client.on('error', err => console.log('Redis Client Error', err))
+redis_client.on("error", (err) => {
+    console.log("Redis Client Error", err);
+});
 
-async function connectRedis() {
+export async function connectRedis() {
     if (!redis_client.isOpen) {
         await redis_client.connect();
-        console.log("Redis connected")
+        console.log("Redis connected");
     }
 }
-
-module.exports = { redis_client, connectRedis };

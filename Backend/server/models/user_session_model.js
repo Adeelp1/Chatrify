@@ -1,7 +1,5 @@
-'use strict';
-
-const db = require("../config/db");
-const { get, run } = require("../utils/crudHelper");
+import { db } from '../config/db.js';
+import { run, get } from '../utils/crudHelper.js';
 
 // schema for user_session
 const userSessionSchema = `
@@ -48,7 +46,7 @@ function initUserSession() {
     });
 }
 
-module.exports = {
+export {
     getSession,
     insertSession,
     updateSession,

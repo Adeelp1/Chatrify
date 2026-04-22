@@ -1,23 +1,16 @@
-"use strict";
-
 let io;
 
-function initSocketIO(server) {
-    const socketIO = require("socket.io");
-    
-    io = socketIO(server, {
+export async function initSocketIO(server) {
+    const { Server } = await import("socket.io");
+
+    io = new Server(server, {
         cors: {
-            Credential: true
+            credentials: true
         }
     });
 }
 
-function getSocketIO() {
-    if(!io) throw new Error("Socket.io not initialized");
+export function getSocketIO() {
+    if (!io) throw new Error("Socket.io not initialized");
     return io;
-}
-
-module.exports = {
-    initSocketIO,
-    getSocketIO
 }

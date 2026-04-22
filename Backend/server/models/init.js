@@ -1,12 +1,10 @@
-'use strict';
+import { db } from '../config/db.js';
+import { initUser } from './user_account_model.js';
+import { initUserMatchMacking } from './user_matchmaking_model.js';
+import { initUserSession } from './user_session_model.js';
+import { initUserProfile } from './user_profile_model.js';
 
-const db = require('../config/db');
-const { initUser } = require('./user_account_model');
-const { initUserMatchMacking } = require('./user_matchmaking_model');
-const { initUserSession } = require('./user_session_model');
-const { initUserProfile } = require('./user_profile_model');
-
-function initDB() {
+export function initDB() {
     db.serialize(() => {
         initUser(),
         initUserMatchMacking(),
@@ -14,5 +12,3 @@ function initDB() {
         initUserProfile()
     });
 }
-
-module.exports = initDB;

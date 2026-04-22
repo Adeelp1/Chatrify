@@ -1,7 +1,7 @@
-'use strict';
+import { redis_client, connectRedis } from "../db/redisClient.js";
+import dotenv from "dotenv";
 
-const { redis_client, connectRedis } = require('../db/redisClient');
-require("dotenv").config();
+dotenv.config();
 
 const REDIS_SET_NAME = process.env.REDIS_SET_NAME;
 const REDIS_QUEUE_NAME = process.env.REDIS_QUEUE_NAME;
@@ -21,7 +21,7 @@ async function handleDisconnectedUser(userId) {
     await redis_client.SADD(REDIS_SET_NAME, String(userId));
 }
 
-module.exports = {
+export {
     redisPush,
     handleDisconnectedUser
 };

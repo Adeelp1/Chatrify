@@ -1,9 +1,8 @@
-'use strict';
-// const sqlite3 = require("sqlite3");
-// const path = require("path");
-const userAcc = require("../models/user_account_model");
-const matchMaking = require("../models/user_matchmaking_model")
-const userProfile = require("../models/user_profile_model");
+// import sqlite3 from "sqlite3";
+// import path from "path";
+import userAcc from "../models/user_account_model.js";
+import userProfile from "../models/user_profile_model.js";
+import matchMaking from "../models/user_matchmaking_model.js";
 
 // const dbFiles = 'chatrify.db';
 

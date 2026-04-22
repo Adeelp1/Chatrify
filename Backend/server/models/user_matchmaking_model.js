@@ -1,7 +1,5 @@
-'use strict';
-
-const db = require('../config/db');
-const { run, get, all} = require('../utils/crudHelper');
+import { db } from '../config/db.js';
+import { run, get, all } from '../utils/crudHelper.js';
 
 // schema for interest
 const matchMakingSchema = `
@@ -70,8 +68,7 @@ function initUserMatchMacking() {
     // console.log("user match making table created");
 }
 
-
-module.exports = {
+export {
     getAllData,
     updateGender,
     updateCountry,

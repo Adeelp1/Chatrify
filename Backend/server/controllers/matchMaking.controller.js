@@ -1,7 +1,6 @@
-'use strict';
-const { joinRoom } = require('../services/socket.service');
+import { joinRoom } from '../services/socket.service.js';
 
-function matchUser(req, res) {
+export function matchUser(req, res) {
     try {
         const { userA, userB } = req.body;
         console.log(req.body);
@@ -37,5 +36,3 @@ function matchUser(req, res) {
         });
     }
 }
-
-module.exports = {matchUser};

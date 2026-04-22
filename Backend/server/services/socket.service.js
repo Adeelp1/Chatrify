@@ -1,8 +1,6 @@
-"use strict";
+import { getSocketIO } from "../socket/index.js";
 
-const { getSocketIO } = require("../socket/index");
-
-let io = getSocketIO();
+let io = null;
 let roomCounter = 0;
 let roomID;
 var user_socket_map = new Map();
@@ -26,6 +24,10 @@ function getRoomName(socketId) {
 }
 
 function joinRoom(userId, recommendedUserId) {
+    if (!io) {
+        io = getSocketIO();
+    }
+    
     let user_socketId = user_socket_map.get(userId);
     let recommendedUser_socketId = user_socket_map.get(recommendedUserId);
 
@@ -55,4 +57,8 @@ function joinRoom(userId, recommendedUserId) {
     return true;
 }
 
-module.exports = {joinRoom, user_socket_map, getRoomName}
+export {
+    joinRoom,
+    getRoomName,
+    user_socket_map
+}
