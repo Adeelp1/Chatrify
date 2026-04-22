@@ -1,18 +1,11 @@
-'use strict';
-
-const { v4: uuidv4 } = require('uuid'); // install uuid 
-const {
-    getSession,
-    insertSession,
-    updateSession, 
-    isSessionExits,
-} = require("../models/user_session_model");
+import { v4 as uuidv4 } from 'uuid';
+import { getSession, insertSession, updateSession, isSessionExits } from "../models/user_session_model.js";
 
 function _createSessionid() {
     return uuidv4();
 }
 
-async function isUserExits(sessionId) {
+async function isUserExists(sessionId) {
     const user_id = await isSessionExits(sessionId);
     if (user_id != null) {
         // here, ensure session is not expired. if expired create new one.
@@ -35,7 +28,4 @@ async function setNewSession(user_id) {
     return sessionId;
 }
 
-module.exports = {
-    isUserExits,
-    setNewSession
-}
+export { isUserExists, setNewSession }

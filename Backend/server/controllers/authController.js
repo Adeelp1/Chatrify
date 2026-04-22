@@ -1,10 +1,8 @@
-'use strict';
-
-const { hashPassword, comparePassword } = require("../utils/hash");
-const userAccount = require('../models/user_account_model');
-const userProfile = require('../models/user_profile_model');
-const { setNewSession, isUserExits } = require("../utils/session");
-const { createUserEmbedgingsAndStore } = require('../client/recommenderClient');
+import { hashPassword, comparePassword } from "../utils/hash.js";
+import userAccount from "../models/user_account_model.js";
+import userProfile from "../models/user_profile_model.js";
+import { setNewSession, isUserExists } from "../utils/session.js";
+import { createUserEmbedgingsAndStore } from "../client/recommenderClient.js";
 
 async function signupUser(req, res) {
     const {
@@ -86,7 +84,7 @@ async function loginUser(req, res) {
 
 }
 
-async function autoLoign(req, res) {
+async function autoLogin(req, res) {
     let sessionId;
     try {
         sessionId = req.cookies.sessionId;
@@ -94,7 +92,7 @@ async function autoLoign(req, res) {
     catch {
         return res.json({ error: "sessionId doesn't exist" });
     }
-    const isUser = await isUserExits(sessionId);
+    const isUser = await isUserExists(sessionId);
     if(isUser){
         // console.log("got to index.html", isUser);
         return res.json({ message: "User exist" });
@@ -109,8 +107,8 @@ async function logoutUser(req, res) {
     res.clearCookie("sessionId");
 }
 
-module.exports = {
-    autoLoign,
+export {
+    autoLogin,
     loginUser,
     signupUser,
     logoutUser

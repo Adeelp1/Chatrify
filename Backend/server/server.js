@@ -1,33 +1,35 @@
-"use strict";
+import express from "express";
+import http from "http";
+import cookieParser from "cookie-parser";
+import lusca from "lusca";
+import path from "path";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
 
-const express = require("express");
-const http = require("http");
-// const socketIO = require("socket.io");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const lusca = require("lusca");
-
-const { initSocketIO, getSocketIO,  } = require("./socket/index");
-const initDB = require("./models/init");
+import { initSocketIO, getSocketIO } from "./socket/index.js";
+import { initDB } from "./models/init.js";
 
 const app = express();
 const server = http.createServer(app);
-initSocketIO(server);
+await initSocketIO(server);
 const io = getSocketIO();
 
-require("dotenv").config();
+dotenv.config();
 initDB();
 
-const authRoutes = require("./routes/auth");
-const matchMakingRoute = require('./routes/matchmakin.route');
-const { sessionMiddleware } = require("./middleware/sessionMiddleware");
-const { addNewConnectedUser, removeDisconnectedUser } = require('./utils/userServiceHelper');
-const { redis_client, connectRedis} = require('./db/redisClient');
-const { closeDB } = require('./utils/crudHelper');
-const { user_socket_map, getRoomName } = require("./services/socket.service");
+import authRoutes from "./routes/auth.js";
+import matchMakingRoute from "./routes/matchmakin.route.js";
+import { sessionMiddleware } from "./middleware/sessionMiddleware.js";
+import { addNewConnectedUser, removeDisconnectedUser } from "./utils/userServiceHelper.js";
+import { redis_client, connectRedis } from "./db/redisClient.js";
+import { closeDB } from "./utils/crudHelper.js";
+import { user_socket_map, getRoomName } from "./services/socket.service.js";
 
 
 const PORT = 3000
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 var activeUsers = 0;
 // var activeRooms = [];
@@ -83,7 +85,7 @@ io.on("connection", async (socket) => {
     //     // clients[username] = { username, id: socket.id };
     //     // io.emit("users", clients)
     //     console.log(session);
-    //     const isUser = await isUserExits(session);
+    //     const isUser = await isUserExists(session);
     //     if (isUser)
     //         return true;
     //     else

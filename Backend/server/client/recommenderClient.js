@@ -1,5 +1,4 @@
-'use strict';
-const axios = require("axios");
+import axios from "axios";
 
 function createUserEmbedgingsAndStore(userId, interest) {
 
@@ -47,7 +46,7 @@ function userDisconnect(userId) {
     });
 }
 
-module.exports = {
+export {
     userConnect,
     userDisconnect,
     deleteUserEmbeddings,

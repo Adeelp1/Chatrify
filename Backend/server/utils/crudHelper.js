@@ -1,6 +1,4 @@
-'use strict';
-
-const db = require("../config/db");
+import { db } from "../config/db.js";
 
 function run(query, params = []) {
     return new Promise((resolve, reject) => {
@@ -38,4 +36,4 @@ function closeDB() {
     });
 }
 
-module.exports = { run, get, all, closeDB }
+export { run, get, all, closeDB }

@@ -1,7 +1,5 @@
-'use strict';
-
-const db = require('../config/db');
-const { run, get, all } = require('../utils/crudHelper');
+import { db } from '../config/db.js';
+import { run, get, all } from '../utils/crudHelper.js';
 
 // schema of user
 const usersSchema = `
@@ -38,50 +36,50 @@ const _getAllDataQuery = `SELECT * FROM users`;
 
 // ----- CRUD Functions -----
 // store user in db
-async function createUser(username, email, password_hash) {
+export async function createUser(username, email, password_hash) {
     return await run(insertQuery, [username, email, password_hash]);
 }
 
 // update user password
-async function updatePassword(id, newPass) {
+export async function updatePassword(id, newPass) {
     return await run(updatePassQuery, [newPass, id]);
 }
 
 // update username
-async function updateUsername(id, newUsername) {
+export async function updateUsername(id, newUsername) {
     return await run(updateUsernameQuery, [newUsername, id]);
 }
 
 // update user email
-async function updateEmail(id, newEmail) {
+export async function updateEmail(id, newEmail) {
     return await run(updateEmailQuery, [newEmail, id]);
 }
 
 // search user by username
-async function searchByUsername(username) {
+export async function searchByUsername(username) {
     return await get(searchByUsernameQuery, [username]);
 }
 
 // search user by email
-async function searchByEmail(email) {
+export async function searchByEmail(email) {
     return await get(searchByEmailQuery, [email]);
 } 
 
 // retrieve password by email
-async function getPasswordByEmail(email) {
+export async function getPasswordByEmail(email) {
     return await get(getPasswordByEmailQuery, [email]);
 }
 
-// retrieve password by email
-async function getPasswordByUsername(username) {
+// retrieve password by username
+export async function getPasswordByUsername(username) {
     return await get(getPasswordByUsernameQuery, [username]);
 }
 
-async function getAllData() {
+export async function getAllData() {
     return await all(_getAllDataQuery);
 }
 
-function initUser() {
+export function initUser() {
     db.serialize(() =>{
         // create users table
         db.run(usersSchema, (err) => {
@@ -101,7 +99,7 @@ function initUser() {
     });
 }
 
-module.exports = {
+export default {
     initUser,
     createUser, 
     getAllData,

@@ -1,6 +1,7 @@
 {
   "name": "chatrify",
-  "version": "2.0.0",
+  "version": "3.0.0",
+  "type": "module",
   "main": "Backend/server/server.js",
   "scripts": {
     "start": "node Backend/server/server.js"
@@ -12,10 +13,15 @@
     "dotenv": "^17.2.3",
     "express": "^4.22.1",
     "express-session": "^1.18.2",
+    "lusca": "^1.7.0",
     "redis": "^5.10.0",
     "socket.io": "^4.8.1",
-    "sqlite3": "^5.1.7",
-    "uuid": "^13.0.0",
-    "lusca": "^1.7.0"
+    "sqlite3": "^6.0.1",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.4",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.5.0"
   }
 }

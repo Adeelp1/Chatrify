@@ -1,7 +1,5 @@
-'use strict';
-
-const { userConnect, userDisconnect } = require('../client/recommenderClient');
-const { redisPush, handleDisconnectedUser } = require('../services/matchmaking.services');
+import { userConnect, userDisconnect } from '../client/recommenderClient.js';
+import { redisPush, handleDisconnectedUser } from '../services/matchmaking.services.js';
 
 async function addNewConnectedUser(userId) {
     userConnect(userId);
@@ -13,7 +11,4 @@ async function removeDisconnectedUser(userId) {
     await handleDisconnectedUser(userId);
 }
 
-module.exports = {
-    addNewConnectedUser,
-    removeDisconnectedUser
-}
+export { addNewConnectedUser, removeDisconnectedUser }

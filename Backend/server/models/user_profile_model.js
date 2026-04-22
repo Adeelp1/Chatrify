@@ -1,8 +1,6 @@
-'use strict';
-
-const db = require('../config/db');
-const { run, get, all } = require('../utils/crudHelper');
-// const user_matchmaking = require("./user_matchmaking_model"); // don't remove, this is used for creating user_matchmaking table
+import { db } from '../config/db.js';
+import { run, get, all } from '../utils/crudHelper.js';
+import "./user_matchmaking_model.js"; // don't remove, this is used for creating user_matchmaking table
 
 // schema for interest
 const userProfileSchema = `
@@ -44,54 +42,54 @@ const _getInterestsQuery = `SELECT interests FROM user_matchmaking WHERE user_id
 const _getAllDataQuery = `SELECT * FROM user_profile`;
 
 /* ---------------- CRUD ---------------- */
-async function createUserProfile(id, f_name, l_name, n_name, gender, country, interest, bio='') {
+export async function createUserProfile(id, f_name, l_name, n_name, gender, country, interest, bio='') {
     return await run(_insertQuery, [id, f_name, l_name, n_name, gender, country, interest, bio]);
 }
 
-async function updateFirstname(id, f_name) {
+export async function updateFirstname(id, f_name) {
     return await run(_updateFirstnameQuery, [f_name, id]);
 }
 
-async function updateLastname(id, l_name) {
+export async function updateLastname(id, l_name) {
     return await run(_updateLastnameQuery, [l_name, id]);
 }
 
-async function updateNickname(id, n_name) {
+export async function updateNickname(id, n_name) {
     return await run(_updateNicknameQuery, [n_name, id]);
 }
 
-async function updateGender(id, new_gender) {
+export async function updateGender(id, new_gender) {
     return await run(_updateGenderQuery, [new_gender, id]);
 }
 
-async function updateCountry(id, new_country) {
+export async function updateCountry(id, new_country) {
     return await run(_updateCountryQuery, [new_country, id]);
 }
 
-async function updateBio(id, new_bio) {
+export async function updateBio(id, new_bio) {
     return await run(_updateBioQuery, [new_bio, id]);
 }
 
-async function updateInterests(id, new_interest) {
+export async function updateInterests(id, new_interest) {
     let interests = await _getInterests(id);
     interests = interests.interests;
     interests += ", " + new_interest;
     return await run(_updateInterestQuery, [interests, id]);
 }
 
-async function searchByUserid(id) {
+export async function searchByUserid(id) {
     return await get(_searchByUserIdQuery, [id]);
 }
 
-async function _getInterests(id) {
+export async function _getInterests(id) {
     return await get(_getInterestsQuery, [id]);
 }
 
-async function getAllData() {
+export async function getAllData() {
     return await all(_getAllDataQuery);
 }
 
-function initUserProfile() {
+export function initUserProfile() {
     db.serialize(() => {
         db.run(userProfileSchema, (err) => {
             if (err) return console.error("[user profile schema] " + err.message);
@@ -105,7 +103,7 @@ function initUserProfile() {
     });
 }
 
-module.exports = {
+export default {
     updateBio,
     getAllData,
     updateGender,

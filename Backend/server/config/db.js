@@ -1,9 +1,9 @@
-'use strict';
+import sqlite3 from "sqlite3";
 
-const sqlite3 = require("sqlite3").verbose();
+const sqlite = sqlite3.verbose();
 
 // Connect to a database 
-const db = new sqlite3.Database(':memory:');
+export const db = new sqlite.Database(':memory:');
 // const db = new sqlite3.Database('chatrify.db');
 
 db.run("PRAGMA foreign_keys = ON");
@@ -16,5 +16,3 @@ db.run("PRAGMA foreign_keys = ON");
 //     });
 // });
 
-
-module.exports = db;
