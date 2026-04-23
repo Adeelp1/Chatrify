@@ -4,7 +4,8 @@
   "type": "module",
   "main": "Backend/server/server.js",
   "scripts": {
-    "start": "node Backend/server/server.js"
+    "start": "node Backend/server/server.js",
+    "lint": "eslint ."
   },
   "dependencies": {
     "axios": "^1.15.0",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "eslint": "^9.39.4",
+    "eslint-import-resolver-node": "^0.3.10",
     "eslint-plugin-import": "^2.32.0",
     "globals": "^17.5.0"
   }

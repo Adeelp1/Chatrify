@@ -34,7 +34,7 @@ const __dirname = path.dirname(__filename);
 var activeUsers = 0;
 // var activeRooms = [];
 
-var roomId;
+// var roomId;
 // var roomCounter = 0;
 // var clients = {};
 // var user_queue = [];
