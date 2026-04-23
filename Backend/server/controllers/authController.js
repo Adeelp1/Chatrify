@@ -4,6 +4,10 @@ import userProfile from "../models/user_profile_model.js";
 import { setNewSession, isUserExists } from "../utils/session.js";
 import { createUserEmbedgingsAndStore } from "../client/recommenderClient.js";
 
+import { dotenv } from "dotenv";
+
+dotenv.config();
+
 async function signupUser(req, res) {
     const {
         confirm_password,
@@ -76,7 +80,7 @@ async function loginUser(req, res) {
         console.log("Login successful");
         res.cookie("sessionId", sessionId, {
             httpOnly: true, // prevents JS access
-            secure: false, // set true if using HTTPS
+            secure: process.env.NODE_ENV === "production", // only send over HTTPS in production
             sameSite: "strict",
             maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
         });
