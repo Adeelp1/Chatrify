@@ -2,7 +2,7 @@ import { getSocketIO } from "../socket/index.js";
 
 let io = null;
 let roomCounter = 0;
-let roomID;
+// let roomID;
 var user_socket_map = new Map();
 
 function generateRoomName() {

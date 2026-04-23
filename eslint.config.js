@@ -33,6 +33,11 @@ export default defineConfig([
       "no-undef": "error",
       "import/no-commonjs": "error",
       "import/no-unresolved": "error",
+    },
+    settings: {
+      "import/resolver": {
+        node: true
+      }
     }
   },
 ]);

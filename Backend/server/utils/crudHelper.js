@@ -30,6 +30,7 @@ function all(query) {
 function closeDB() {
     return new Promise((resolve, reject) => {
         db.close(err => {
+            if (err) return reject(err.message);
             console.log("Database connection closed.");
             resolve();
         });
