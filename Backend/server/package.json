@@ -2,9 +2,9 @@
   "name": "chatrify",
   "version": "3.0.0",
   "type": "module",
-  "main": "Backend/server/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node Backend/server/server.js",
+    "start": "node server.js",
     "lint": "eslint ."
   },
   "dependencies": {
