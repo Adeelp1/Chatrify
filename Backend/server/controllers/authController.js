@@ -4,7 +4,7 @@ import userProfile from "../models/user_profile_model.js";
 import { setNewSession, isUserExists } from "../utils/session.js";
 import { createUserEmbedgingsAndStore } from "../client/recommenderClient.js";
 
-import { dotenv } from "dotenv";
+import dotenv from "dotenv";
 
 dotenv.config();
 
